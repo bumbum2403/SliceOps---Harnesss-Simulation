@@ -1,0 +1,21 @@
+{
+  "currency": "INR",
+  "tax_rate": "0.05",
+  "max_items": 3,
+  "max_quantity": 3,
+
+  "pizzas": {
+    "margherita": { "price": "199", "base": ["tomato sauce", "mozzarella", "basil"] },
+    "farmhouse":  { "price": "249", "base": ["tomato sauce", "mozzarella", "onion", "capsicum"] },
+    "pepperoni":  { "price": "329", "base": ["tomato sauce", "mozzarella", "pepperoni"] }
+  },
+
+  "toppings": {
+    "mushroom": "40",
+    "olive": "40",
+    "paneer": "60",
+    "extra cheese": "50"
+  },
+
+  "not_served": ["drinks", "sides", "desserts"]
+}

@@ -1,0 +1,357 @@
+/* SliceOps: one stylesheet, no framework, no build step.
+   Theme is driven by CSS variables so light and dark are one rule set. */
+
+:root {
+  --bg: #f4f1ea;          --panel: #fffdf8;      --ink: #23262e;
+  --muted: #6d7280;       --line: #343945;       --edge: #e2ddd0;
+  --wall: #efe7d6;        --floor-top: #d9cfb8;  --floor-bottom: #c6b99c;
+  --tile: rgba(0,0,0,.04);
+  --furniture: #b98b5e;   --furniture-top: #cfa478;
+  --device: #8d9199;      --screen: #9fe0c7;     --oven-door: #4c5159;
+  --skin: #f0c89d;
+  --marco: #f08a3c;  --marco-dark: #d2691e;
+  --sophia: #19a7a0; --sophia-dark: #0f7c77;
+  --chef: #efece4;   --chef-dark: #cfcabf;
+  --ok: #1e9e52; --warn: #c98a00; --bad: #d4453c;
+  --shadow: rgba(0,0,0,.14);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { color-scheme: dark; }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #13151a; --panel: #1b1e25; --ink: #e8e6e1; --muted: #99a0ac;
+  --line: #0c0e12; --edge: #2a2e36;
+  --wall: #222630; --floor-top: #2b2e37; --floor-bottom: #1d2027;
+  --tile: rgba(255,255,255,.025);
+  --furniture: #7d5a3a; --furniture-top: #946c47;
+  --device: #474c56; --screen: #2e7f68; --oven-door: #282c33;
+  --chef: #d6d2c8; --chef-dark: #b5b1a7;
+  --shadow: rgba(0,0,0,.45);
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 15px/1.45 ui-sans-serif, system-ui, -apple-system, sans-serif;
+  display: flex; flex-direction: column;
+}
+
+/* ---------- top bar ---------- */
+.topbar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 16px; border-bottom: 1px solid var(--edge);
+}
+.brand { font-weight: 700; letter-spacing: .3px; }
+.spacer { flex: 1; }
+.runid { color: var(--muted); font: 12px ui-monospace, monospace; }
+.chip {
+  font: 600 11px ui-monospace, monospace; letter-spacing: 1px;
+  padding: 3px 9px; border-radius: 999px;
+  background: var(--line); color: #fff;
+}
+.chip.ghost { background: transparent; color: var(--muted); border: 1px solid var(--edge); }
+
+button, select, input {
+  font: inherit; color: var(--ink); background: var(--panel);
+  border: 1px solid var(--edge); border-radius: 9px; padding: 7px 12px;
+}
+button { cursor: pointer; }
+button.primary {
+  background: var(--marco); border-color: var(--marco);
+  color: #1a1206; font-weight: 700; letter-spacing: .4px;
+}
+button.primary:disabled { opacity: .45; cursor: not-allowed; }
+button.ghost { background: transparent; font: 600 12px ui-monospace, monospace; }
+button.icon { background: transparent; border: none; font-size: 17px; }
+
+/* ---------- layout ---------- */
+.layout {
+  flex: 1; min-height: 0;
+  display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 14px;
+  padding: 14px 16px;
+}
+.stage-wrap {
+  min-width: 0; background: var(--panel);
+  border: 1px solid var(--edge); border-radius: 16px; overflow: hidden;
+}
+.stage { display: block; width: 100%; height: 100%; }
+
+/* ---------- the room ---------- */
+.wall { fill: var(--wall); }
+.floor { fill: url(#floorGrad); }
+.stop-floor-top { stop-color: var(--floor-top); }
+.stop-floor-bottom { stop-color: var(--floor-bottom); }
+.edge-line { stroke: var(--line); stroke-width: 3; opacity: .35; }
+.tiles line { stroke: var(--tile); stroke-width: 3; }
+
+.furniture { fill: var(--furniture); }
+.counter-top { fill: var(--furniture-top); }
+.device { fill: var(--device); }
+.screen { fill: var(--screen); }
+.door-glass { fill: var(--wall); opacity: .55; }
+.knob { fill: var(--furniture-top); }
+.oven-door { fill: var(--oven-door); }
+.oven-port { fill: none; stroke: var(--device); stroke-width: 5; opacity: .6; }
+#oven-glow { transition: opacity .8s ease; }
+
+.sign {
+  font: 700 19px ui-monospace, monospace; fill: var(--muted);
+  text-anchor: middle; letter-spacing: 3px;
+}
+.till-total {
+  font: 700 26px ui-monospace, monospace; fill: var(--line);
+  text-anchor: middle;
+}
+
+/* the menu board */
+.board-back { fill: var(--line); }
+.board-face { fill: #1d2a22; }
+:root[data-theme="light"] .board-face { fill: #243229; }
+.board-title {
+  font: 700 24px ui-monospace, monospace; fill: #ffd98a;
+  text-anchor: middle; letter-spacing: 7px;
+}
+.board-rule { stroke: #ffd98a; stroke-width: 2; opacity: .4; }
+.board-item { font: 19px ui-monospace, monospace; fill: #e9e4d5; }
+.board-price { font: 700 19px ui-monospace, monospace; fill: #ffd98a; text-anchor: end; }
+.board-note {
+  font: 14px ui-monospace, monospace; fill: #9fb3a4;
+  text-anchor: middle; letter-spacing: 1px;
+}
+#board { transition: filter .6s ease; }
+#board.lit { filter: drop-shadow(0 0 22px rgba(255,217,138,.55)); }
+
+/* the served pizza */
+.plate-base { fill: #e9e6df; }
+:root[data-theme="dark"] .plate-base { fill: #cfcabf; }
+.pizza-base { fill: #e8b863; }
+.topping-dot { fill: #c0392b; }
+.topping-dot.green { fill: #4f9b52; }
+.topping-dot.pale { fill: #f6ecd2; }
+
+/* ---------- the cast ---------- */
+.shadow { fill: var(--shadow); }
+.skin { fill: var(--skin); }
+.eye { fill: #2b2b33; }
+.glint { fill: #fff; opacity: .9; }
+.smile { fill: none; stroke: #2b2b33; stroke-width: 3; stroke-linecap: round; }
+.body-marco  { fill: var(--marco); }
+.body-sophia { fill: var(--sophia); }
+.body-chef   { fill: var(--chef); }
+.hat-marco { fill: var(--marco-dark); }
+.hair-sophia { fill: #4a3426; }
+.toque { fill: #fbfaf7; }
+.apron { fill: #fbfaf7; opacity: .92; }
+.arm { opacity: .95; }
+
+.plate-back { fill: var(--line); opacity: .9; }
+.plate-name {
+  font: 700 16px ui-sans-serif, system-ui, sans-serif; fill: #fff;
+  text-anchor: middle; letter-spacing: 1.4px;
+}
+/* The model, quieter than the name: the character is who you follow, the
+   model is what you compare afterwards. Monospace so the three line up. */
+.plate-model {
+  font: 600 12px ui-monospace, monospace; fill: #fff; opacity: .7;
+  text-anchor: middle; letter-spacing: .6px;
+}
+
+.bubble rect { fill: var(--panel); stroke: var(--line); stroke-width: 2.5; rx: 14; }
+.bubble text { font: 15px ui-sans-serif, system-ui, sans-serif; fill: var(--ink); }
+.hidden { display: none; }
+
+/* the hand-off slip */
+.slip-back { fill: var(--panel); stroke: var(--line); stroke-width: 2.5; }
+.slip-text {
+  font: 600 15px ui-monospace, monospace; fill: var(--ink); text-anchor: middle;
+}
+
+/* rotate() and scale() need an explicit reference box inside SVG: with the
+   default transform-box a character would pivot around the whole viewBox and
+   swing across the stage. fill-box pins it to its own bounding box.
+   NB: nothing here may set `transform` on .actor - GSAP owns that one. */
+.bob, .head, .arm, .eye { transform-box: fill-box; }
+.bob { transform-origin: 50% 50%; }
+.head { transform-origin: 50% 88%; }
+.eye { transform-origin: 50% 50%; }
+
+/* Nobody is ever completely still. The staggered delays keep three characters
+   from breathing in lockstep, which reads as a loop rather than as people. */
+@keyframes sway {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50%      { transform: translateY(-3px) rotate(.7deg); }
+}
+@keyframes blink { 0%, 95%, 100% { transform: scaleY(1); } 97% { transform: scaleY(.1); } }
+
+.bob { animation: sway 4.2s ease-in-out infinite; }
+#actor-marco  .bob { animation-delay: -.4s; }
+#actor-sophia .bob { animation-delay: -2.1s; }
+#actor-chef   .bob { animation-delay: -3.3s; }
+.eye { animation: blink 6s infinite; }
+#actor-sophia .eye { animation-delay: -2.4s; }
+#actor-chef   .eye { animation-delay: -4.1s; }
+
+/* Busy: the one who is working right now. */
+.actor .rig { transition: opacity .5s ease; }
+.stage.focused .actor:not(.active) .rig { opacity: .4; }
+
+/* ---------- the side rail ---------- */
+.rail {
+  display: flex; flex-direction: column; gap: 8px; min-height: 0;
+  overflow: hidden;
+}
+.rail-head {
+  font: 600 11px ui-monospace, monospace; letter-spacing: 1.5px;
+  color: var(--muted); padding: 2px 2px 0;
+}
+.rail-head .dim { opacity: .6; font-weight: 400; letter-spacing: .5px; }
+
+.chain { list-style: none; margin: 0; padding: 0; display: grid; gap: 5px; }
+.chain li {
+  display: flex; align-items: center; gap: 9px;
+  padding: 8px 11px; border-radius: 10px;
+  background: var(--panel); border: 1px solid var(--edge);
+  opacity: .55; transition: opacity .3s ease, border-color .3s ease;
+}
+.chain li.done { opacity: .85; }
+.chain li.active { opacity: 1; border-color: currentColor; }
+.chain .n { font: 700 11px ui-monospace, monospace; color: var(--muted); }
+.chain .who { font-weight: 700; }
+.chain .job { color: var(--muted); font: 12px ui-monospace, monospace; }
+.chain .mdl {
+  margin-left: auto; font: 600 10px ui-monospace, monospace;
+  color: var(--muted); border: 1px solid var(--edge);
+  padding: 1px 6px; border-radius: 999px;
+}
+.chain li.done .mdl, .chain li.active .mdl { border-color: currentColor; }
+
+.transcript {
+  flex: 1; min-height: 0; overflow-y: auto;
+  background: var(--panel); border: 1px solid var(--edge);
+  border-radius: 12px; padding: 12px;
+  display: flex; flex-direction: column; gap: 11px;
+}
+.transcript .empty { color: var(--muted); margin: 0; font-size: 13.5px; }
+.line { display: grid; gap: 3px; }
+.line .head { display: flex; align-items: baseline; gap: 6px; }
+.line .who { font: 700 11px ui-monospace, monospace; letter-spacing: 1px; }
+.line .to { font: 11px ui-monospace, monospace; color: var(--muted); }
+/* The call under the sentence. The dialogue is the renderer dressing an
+   argument list; this is what actually happened, one glance away. */
+.line .tool {
+  margin-left: auto; font: 10px ui-monospace, monospace; color: var(--muted);
+  border: 1px solid var(--edge); border-radius: 999px; padding: 0 6px;
+}
+.line .what { font-size: 14px; }
+
+/* Words the model wrote itself, as opposed to the renderer's phrasing. */
+.line.verbatim .what {
+  font-style: italic;
+  border-left: 2px solid currentColor; padding-left: 9px;
+}
+.line.handoff {
+  background: color-mix(in srgb, currentColor 9%, transparent);
+  border-radius: 9px; padding: 8px 10px; margin: 2px -2px;
+}
+.line.handoff .what { font-weight: 600; font-style: normal; }
+.line.shop { padding-left: 14px; }
+.line.shop .what { color: var(--muted); font-size: 13.5px; }
+.line.note .what { color: var(--muted); font-size: 13px; }
+.line.fail .what { color: var(--bad); font-size: 13px; }
+.shop-ink { color: var(--muted); }
+.you-ink { color: var(--muted); }
+.marco-ink  { color: var(--marco-dark); }
+.sophia-ink { color: var(--sophia-dark); }
+.chef-ink   { color: var(--muted); }
+:root[data-theme="dark"] .marco-ink  { color: var(--marco); }
+:root[data-theme="dark"] .sophia-ink { color: var(--sophia); }
+:root[data-theme="dark"] .chef-ink   { color: var(--chef-dark); }
+
+/* ---------- the order bar ---------- */
+.controls {
+  display: flex; gap: 9px; align-items: center;
+  padding: 11px 16px; border-top: 1px solid var(--edge);
+}
+.youare {
+  font: 600 11px ui-monospace, monospace; letter-spacing: 1px;
+  color: var(--muted); white-space: nowrap;
+}
+#order { flex: 1; min-width: 0; }
+
+/* ---------- modals ---------- */
+.modal {
+  position: fixed; inset: 0; background: rgba(0,0,0,.6);
+  display: grid; place-items: center; z-index: 10; padding: 16px;
+}
+/* .modal and .hidden are both single-class selectors and .modal comes later,
+   so it would win and every panel would sit open from the moment the page
+   loaded. This settles it. */
+.modal.hidden { display: none; }
+.modal-box {
+  background: var(--panel); border-radius: 18px; padding: 24px 28px;
+  max-width: 620px; width: 100%; max-height: 88vh; overflow: auto;
+  box-shadow: 0 24px 70px rgba(0,0,0,.45);
+}
+.modal-box h2 { margin: 0 0 3px; font-size: 21px; }
+.sub { color: var(--muted); font-size: 13px; margin: 0 0 14px; }
+.modal-actions { display: flex; gap: 10px; margin-top: 18px; }
+
+.menu-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 13px; border-radius: 12px; border: 1px solid var(--edge);
+  margin-bottom: 7px; cursor: pointer; background: transparent;
+  width: 100%; text-align: left;
+}
+.menu-row:hover { border-color: var(--marco); }
+.menu-row.on { border-color: var(--marco); background: color-mix(in srgb, var(--marco) 12%, transparent); }
+.menu-row .nm { font-weight: 700; }
+.menu-row .made { color: var(--muted); font-size: 12.5px; }
+.menu-row .pr { margin-left: auto; font: 700 16px ui-monospace, monospace; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 14px; }
+.chip-btn {
+  font: 600 12.5px ui-sans-serif, system-ui, sans-serif;
+  padding: 6px 11px; border-radius: 999px;
+  border: 1px solid var(--edge); background: transparent; cursor: pointer;
+}
+.chip-btn.on { border-color: var(--sophia); background: color-mix(in srgb, var(--sophia) 15%, transparent); }
+.chip-btn.no { opacity: .5; text-decoration: line-through; cursor: default; }
+.h { font: 600 11px ui-monospace, monospace; letter-spacing: 1.4px;
+     color: var(--muted); margin: 16px 0 8px; }
+
+.say {
+  display: flex; align-items: baseline; gap: 10px; margin-top: 16px;
+  padding: 12px 14px; border-radius: 12px; border: 1px dashed var(--edge);
+}
+.say .dim { font: 600 10px ui-monospace, monospace; letter-spacing: 1.2px; color: var(--muted); }
+.say output { font-size: 15px; }
+
+#end-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+#end-table td, #end-table th { padding: 5px 7px; text-align: left; }
+#end-table th { color: var(--muted); font: 600 10px ui-monospace, monospace; letter-spacing: 1px; }
+#end-table .num { text-align: right; font-family: ui-monospace, monospace; }
+#end-chain { display: grid; gap: 7px; margin: 14px 0; }
+#end-chain .line .what { font-size: 13.5px; }
+
+/* ---------- narrow screens ---------- */
+@media (max-width: 1100px) {
+  .layout { grid-template-columns: 1fr; }
+  .rail { max-height: 34vh; }
+}
+
+/* Respect the OS setting. It also makes a headless screenshot truthful:
+   with animations disabled, what is painted is where things really are. */
+@media (prefers-reduced-motion: reduce) {
+  .bob, .eye { animation: none !important; }
+  #board, .actor .rig { transition: none !important; }
+}
+
+/* pendant lamps */
+.lamps .flex { stroke: var(--line); stroke-width: 3; opacity: .5; }
+.lamps .shade { fill: var(--furniture); opacity: .85; }
+.lamps .bulb { fill: #ffd98a; opacity: .9; }
+.clock-face { fill: var(--panel); stroke: var(--line); stroke-width: 4; }
+.clock-hand { stroke: var(--line); stroke-width: 4; stroke-linecap: round; }

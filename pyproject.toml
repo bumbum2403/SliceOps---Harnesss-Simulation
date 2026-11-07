@@ -1,0 +1,32 @@
+[project]
+name = "sliceops"
+version = "0.1.0"
+description = "A four-agent pizza counter: a harness-engineering teaching project."
+readme = "README.md"
+requires-python = ">=3.11"
+
+dependencies = [
+    "claude-agent-sdk",
+    "pydantic>=2",
+    "typer",
+    "rich",
+    "fastapi",
+    "uvicorn",
+]
+
+[project.scripts]
+sliceops = "sliceops.cli:app"
+
+[dependency-groups]
+dev = ["pytest"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["sliceops"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
